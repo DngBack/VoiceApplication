@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  pipecat-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: simple-bot-agent
+    restart: unless-stopped
+    environment:
+      # LiveKit Configuration
+      - LIVEKIT_URL=${LIVEKIT_URL}
+      - LIVEKIT_API_KEY=${LIVEKIT_API_KEY}
+      - LIVEKIT_API_SECRET=${LIVEKIT_API_SECRET}
+      - LIVEKIT_ROOM=${LIVEKIT_ROOM:-default-room}
+      - LIVEKIT_PARTICIPANT_NAME=${LIVEKIT_PARTICIPANT_NAME:-assistant}
+      
+      # OpenAI Configuration
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      
+      # Deepgram Configuration (for STT)
+      - DEEPGRAM_API_KEY=${DEEPGRAM_API_KEY}
+      
+      # Optional: Pre-generated token
+      - LIVEKIT_TOKEN=${LIVEKIT_TOKEN:-}
+    
+    # Note: This agent connects to LiveKit server externally
+    # It does not need to expose ports as it connects via WebRTC to LiveKit
+    # The LiveKit server should be accessible from this container
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: Uncomment to run LiveKit server locally (for development)
+  # For production, use LiveKit Cloud or self-hosted LiveKit server
+  # livekit-server:
+  #   image: livekit/livekit-server:latest
+  #   container_name: livekit-server
+  #   ports:
+  #     - "7880:7880"  # HTTP/WebSocket
+  #     - "50000-50100:50000-50100/udp"  # RTC ports
+  #   environment:
+  #     - LIVEKIT_KEYS=${LIVEKIT_API_KEY}:${LIVEKIT_API_SECRET}
+  #   command: --dev
+  #   network_mode: host  # Required for WebRTC
+

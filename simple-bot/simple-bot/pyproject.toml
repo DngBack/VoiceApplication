@@ -1,7 +1,11 @@
 [project]
 name = "simple-bot"
 version = "0.1.0"
-description = "Add your description here"
+description = "Simple chatbot using Pipecat with LiveKit WebRTC transport"
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+    "pipecat-ai[livekit]>=0.0.30",
+    "python-dotenv>=1.0.0",
+    "livekit>=0.11.0",
+]
